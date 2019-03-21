@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/addons/p5.dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/addons/p5.dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/addons/p5.sound.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTT</title>
+    <style>
+    
+    </style>
+  </head>
+  <body>
+    <script>
+      var turn = 'x';
+      $(function(e) {
+        var socket = io();
+        
+      });
+      
+      function settings()
+      {
+        size(windowWidth,windowHeight);
+      }
+      
+      function setup()
+      {
+        
+      }
+      
+      function draw()
+      {
+        background(51);
+      }
+    </script>
+  </body>
+</html>
+
+$(function() {
+        var socket = io();
+        $('form').submit(function(e){
+          e.preventDefault(); // prevents page reloading
+          socket.emit('chat message', $('#user').val() + ": " + $('#m').val());
+          $('#m').val('');
+          return false;
+        });
+        
+        socket.on('message', function(msg){
+        $('#messages').append($('<li>').text(msg));
+        });
+      });
