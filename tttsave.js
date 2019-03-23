@@ -2,49 +2,59 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 2000;
-var turnChecker = 0, connecting = false, reloading = false;
+var turnChecker = 0, xConnection = 0, oConnection = 0, connecting = false, activeClients = 0, socketList = [];
 
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
 io.on('connection', function(socket){
-  connect();
-  function connect(){
+  var included = false;
+  for (var i = 0; i < socketList.length; i++){
+    if (socket.id == socketList[i].id){
+      included = true;
+    }
+  }
+  if (!included){
+    socketList.push(socket);
+  }
+  
+  connect(socket);
+  function connect(sock){
+    console.log('something passed connection');
     if (turnChecker == 0){
     if (!connecting){
       connecting = true;
-      socket.emit('reset');
-      socket.emit('setup', 'X');
+      sock.emit('reset');
+      sock.emit('setup', 'X');
     } else {
       setTimeout(function(){
         connect();
-      },3000);
+      },1000);
     }
   }
   else if (turnChecker == 1){
     if (!connecting){
       connecting = true;
-      socket.emit('reset');
-      socket.emit('setup', 'O');
+      sock.emit('reset');
+      sock.emit('setup', 'O');
     } else {
       setTimeout(function(){
         connect();
-      },3000);
+      },1000);
     }
   }
   else {
+    activeClients += 1;
     console.log('There is more than 2 players in the lobby');
   }
   }
   
   socket.on('setuprecieved', function(t){
     connecting = false;
+    activeClients += 1;
     turnChecker += 1;
     console.log('Set Player ' + t);
-    if (t == 'O'){
-      io.sockets.emit('startGame')
-    }
   });
   
   socket.on('sendmove', function(player, pos) {
@@ -62,23 +72,37 @@ io.on('connection', function(socket){
   });
   
   socket.on('disconnect', function(){
-    if (!reloading){
-    console.log('player disconnected');
-    io.sockets.emit('bigmessage', 'Error: Reloading');
-    reloading = true;
-    setTimeout(reconnect, 3000);
+    socket.emit('checkconnection');
+    setTimeout(connections, 20);
+  });
+  
+  socket.on('connected', function(p){
+    if (p == 'X'){
+      xConnection = 1;
+    }
+    if (p == 'O'){
+      oConnection = 1;
     }
   });
   
-  function reconnect(){
-    turnChecker = 0;
-    connecting = false;
-    io.sockets.emit('reconnect');
+  function connections(){
+    if (oConnection == 0 || xConnection == 0){
+      io.sockets.emit('reset');
+      turnChecker = 0; 
+      xConnection = 0;
+      oConnection = 0;
+      connecting = false;
+      console.log('A player disconnected');
+      for (var i = 0; i < activeClients; i++){
+        if (socketList[i] != undefined){
+          connect(socketList[i]);
+        } else {
+          socketList.splice(i, 1)
+        }
+      }
+      activeClients = 0;
+    }
   }
-  
-  socket.on('loaded', function(){
-    reloading = false;
-  });
 });
 
 http.listen(port, function(){

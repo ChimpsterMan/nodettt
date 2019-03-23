@@ -1,53 +1,145 @@
 <!doctype html>
 <html>
   <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/addons/p5.dom.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/addons/p5.dom.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/addons/p5.sound.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TTT</title>
     <style>
-    
+      * {margin: 0; padding: 0}
+      
+      .field {
+        height: 300px; 
+        width: 300px;
+        border: solid 1px black;
+      }
+      .tile {
+        z-index:2;
+        margin:-1px;
+        height: 100px;
+        width: 100px;
+        border: solid 1px black;
+        display: block;
+        float:left;
+      }
+      .tile h1 {
+        text-align:center;
+        padding-bottom:10%;
+        padding-top:10%;
+        font-size: 450%;
+      }
+      h1#bigMessage {
+        position: relative;
+        bottom:65%;
+        font-size:450%;
+        text-align:center;
+        z-index:1;
+        color: blue;
+      }
     </style>
   </head>
   <body>
+    <h1>Tic-Tac-Toe</h1>
+    <h3>Made by Erik Nilsson</h3>
+    <div class="field">
+      <div class="tile" id="1" data-cell=1><h1></h1></div>
+      <div class="tile" id="2" data-cell=2><h1></h1></div>
+      <div class="tile" id="3" data-cell=3><h1></h1></div>
+      <div class="tile" id="4" data-cell=4><h1></h1></div>
+      <div class="tile" id="5" data-cell=5><h1></h1></div>
+      <div class="tile" id="6" data-cell=6><h1></h1></div>
+      <div class="tile" id="7" data-cell=7><h1></h1></div>
+      <div class="tile" id="8" data-cell=8><h1></h1></div>
+      <div class="tile" id="9" data-cell=9><h1></h1></div>
+      <h1 id="bigMessage"></h1>
+    </div>
+    <h2 id="message"></h2>
     <script>
-      var turn = 'x';
-      $(function(e) {
+      $(function(){
         var socket = io();
+        var p = '';
+        var turn = 'X';
+        var play = false;
+        var winCases = [[1,4,7],
+                        [2,5,8],
+                        [3,6,9],
+                        [1,2,3],
+                        [4,5,6],
+                        [7,8,9],
+                        [1,5,9],
+                        [3,5,7]]
         
-      });
-      
-      function settings()
-      {
-        size(windowWidth,windowHeight);
-      }
-      
-      function setup()
-      {
+        socket.on('connect', function(){
+          socket.emit('loaded');
+        });
+        socket.on('setup', function(t){
+          p = t;
+          $('#message').text('You are: ' + p);
+          socket.emit('setuprecieved', t);
+        });
         
-      }
-      
-      function draw()
-      {
-        background(51);
-      }
-    </script>
-  </body>
-</html>
-
-$(function() {
-        var socket = io();
-        $('form').submit(function(e){
-          e.preventDefault(); // prevents page reloading
-          socket.emit('chat message', $('#user').val() + ": " + $('#m').val());
-          $('#m').val('');
-          return false;
+        $('.tile').on('click', function() {
+          if (play){
+          let num = $(this).attr('data-cell');
+          move(num);
+          }
+        });
+        
+        socket.on('move', function(player,pos){
+          $('[data-cell='+pos+'] h1').text(player);
+          if (turn == 'X'){turn = 'O';}
+          else if(turn == 'O'){turn = 'X';}
+          checkWinCase();
         });
         
         socket.on('message', function(msg){
-        $('#messages').append($('<li>').text(msg));
+          $('#message').text(msg);
         });
+        
+        socket.on('bigmessage', function(msg){
+          $('#bigMessage').text(msg);
+        });
+        
+        socket.on('reset', function(){
+          turn = 'X';
+          for (var i = 1; i <= 9; i++){
+            $('[data-cell=' + i + '] h1').text('');
+          }
+          $('#bigMessage').text('');
+        });
+        
+        socket.on('reconnect', function(){
+          location.reload(true);
+        });
+        
+        socket.on('startGame', function(){
+          start = true;
+        });
+        
+        function move(pos){
+          if (turn == p){
+            socket.emit('sendmove',p,pos);
+          }
+        }
+        
+        function checkWinCase()
+        {
+          var posCounter = 0;
+          for(var g = 0; g < winCases.length; g++){
+            posCounter = 0;
+            for(var i = 0; i < 3; i++){
+              if($('[data-cell='+winCases[g][i]+'] h1').text() == p){
+                posCounter++;
+              }
+            }
+            if(posCounter == 3){
+              socket.emit('win', p);
+              break;
+            }
+          }
+        }
       });
+    </script>
+  </body>
+</html>
