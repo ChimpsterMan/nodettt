@@ -66,7 +66,7 @@ io.on('connection', function(socket){
     console.log('player disconnected');
     io.sockets.emit('bigmessage', 'Error: Reloading');
     reloading = true;
-    setTimeout(reconnect, 3000);
+    setTimeout(reconnect, 1);
     }
   });
   
