@@ -61,6 +61,15 @@ io.on('connection', function(socket){
     }, 3000);
   });
   
+  socket.on('tie', function(){
+    io.sockets.emit('bigmessage', 'Tie!');
+    console.log("Tie!");
+    setTimeout(function(){
+      io.sockets.emit('reset');
+      console.log('Game was reset');
+    }, 3000);
+  });
+  
   socket.on('disconnect', function(){
     if (!reloading){
     console.log('player disconnected');
