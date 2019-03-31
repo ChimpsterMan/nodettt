@@ -8,7 +8,9 @@
     <title>TTT</title>
     <style>
       * {margin: 0; padding: 0}
-      
+      body {
+        text-align:center;
+      }
       .field {
         height: 300px; 
         width: 300px;
@@ -28,6 +30,9 @@
         padding-bottom:10%;
         padding-top:10%;
         font-size: 450%;
+      }
+      .tile h1:hover {
+        cursor: default;
       }
       h1#bigMessage {
         position: relative;
@@ -82,9 +87,9 @@
         });
         
         $('.tile').on('click', function() {
-          if (play){
           let num = $(this).attr('data-cell');
-          move(num);
+          if (play && $('[data-cell='+num+'] h1').text() == ''){
+            move(num);
           }
         });
         
