@@ -34,6 +34,9 @@
       .tile h1:hover {
         cursor: default;
       }
+      .game {
+        text-align:center;
+      }
       h1#bigMessage {
         position: relative;
         bottom:65%;
@@ -47,17 +50,19 @@
   <body>
     <h1>Tic-Tac-Toe</h1>
     <h3>Made by Erik Nilsson</h3>
-    <div class="field">
-      <div class="tile" id="1" data-cell=1><h1></h1></div>
-      <div class="tile" id="2" data-cell=2><h1></h1></div>
-      <div class="tile" id="3" data-cell=3><h1></h1></div>
-      <div class="tile" id="4" data-cell=4><h1></h1></div>
-      <div class="tile" id="5" data-cell=5><h1></h1></div>
-      <div class="tile" id="6" data-cell=6><h1></h1></div>
-      <div class="tile" id="7" data-cell=7><h1></h1></div>
-      <div class="tile" id="8" data-cell=8><h1></h1></div>
-      <div class="tile" id="9" data-cell=9><h1></h1></div>
-      <h1 id="bigMessage"></h1>
+    <div class="game">
+      <div class="field">
+        <div class="tile" id="1" data-cell=1><h1></h1></div>
+        <div class="tile" id="2" data-cell=2><h1></h1></div>
+        <div class="tile" id="3" data-cell=3><h1></h1></div>
+        <div class="tile" id="4" data-cell=4><h1></h1></div>
+        <div class="tile" id="5" data-cell=5><h1></h1></div>
+        <div class="tile" id="6" data-cell=6><h1></h1></div>
+        <div class="tile" id="7" data-cell=7><h1></h1></div>
+        <div class="tile" id="8" data-cell=8><h1></h1></div>
+        <div class="tile" id="9" data-cell=9><h1></h1></div>
+        <h1 id="bigMessage"></h1>
+      </div>
     </div>
     <h2 id="message"></h2>
     <script>
