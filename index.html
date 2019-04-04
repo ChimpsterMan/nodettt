@@ -15,6 +15,7 @@
         height: 300px; 
         width: 300px;
         border: solid 1px black;
+        margin:0 auto 0 auto;
       }
       .tile {
         z-index:2;
@@ -50,7 +51,6 @@
   <body>
     <h1>Tic-Tac-Toe</h1>
     <h3>Made by Erik Nilsson</h3>
-    <div class="game">
       <div class="field">
         <div class="tile" id="1" data-cell=1><h1></h1></div>
         <div class="tile" id="2" data-cell=2><h1></h1></div>
@@ -63,7 +63,6 @@
         <div class="tile" id="9" data-cell=9><h1></h1></div>
         <h1 id="bigMessage"></h1>
       </div>
-    </div>
     <h2 id="message"></h2>
     <script>
       $(function(){
